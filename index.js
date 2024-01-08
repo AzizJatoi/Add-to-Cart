@@ -1,66 +1,44 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"
-import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+let todoItems = [];
+const addButton = document.getElementById("add-button");
+const inputField = document.getElementById("input-field");
+const todoList = document.getElementById("todo-list");
+const savedTodos = JSON.parse(localStorage.getItem("todoItems"));
 
-const appSettings = {
-    databaseURL: "https://my-azeez-shopping-cart-default-rtdb.asia-southeast1.firebasedatabase.app/"
+// Check for existing todos in local storage
+if (savedTodos) {
+    todoItems = savedTodos;
+    renderTodos(todoItems);
 }
 
-const app = initializeApp(appSettings)
-const database = getDatabase(app)
-const shoppingListInDB = ref(database, "shoppingList")
+// Render todos on the screen
+function renderTodos(items) {
+    todoList.innerHTML = "";
+    for (let i = 0; i < items.length; i++) {
+        const listItem = document.createElement("li");
+        listItem.textContent = items[i];
+        todoList.appendChild(listItem);
 
-const inputFieldEl = document.getElementById("input-field")
-const addButtonEl = document.getElementById("add-button")
-const shoppingListEl = document.getElementById("shopping-list")
-
-addButtonEl.addEventListener("click", function() {
-    let inputValue = inputFieldEl.value
-    
-    push(shoppingListInDB, inputValue)
-    
-    clearInputFieldEl()
-})
-
-onValue(shoppingListInDB, function(snapshot) {
-    if (snapshot.exists()) {
-        let itemsArray = Object.entries(snapshot.val())
-    
-        clearShoppingListEl()
-        
-        for (let i = 0; i < itemsArray.length; i++) {
-            let currentItem = itemsArray[i]
-            let currentItemID = currentItem[0]
-            let currentItemValue = currentItem[1]
-            
-            appendItemToShoppingListEl(currentItem)
-        }    
-    } else {
-        shoppingListEl.innerHTML = "No items here... yet"
+        // Add click event listener for deletion
+        listItem.addEventListener("click", function () {
+            deleteTodoItem(i);
+        });
     }
-})
-
-function clearShoppingListEl() {
-    shoppingListEl.innerHTML = ""
 }
 
-function clearInputFieldEl() {
-    inputFieldEl.value = ""
-}
+// Save Button
+addButton.addEventListener("click", function () {
+    const newTodoItem = inputField.value;
+    if (newTodoItem) {
+        todoItems.push(newTodoItem);
+        inputField.value = "";
+        localStorage.setItem("todoItems", JSON.stringify(todoItems));
+        renderTodos(todoItems);
+    }
+});
 
-function appendItemToShoppingListEl(item) {
-    let itemID = item[0]
-    let itemValue = item[1]
-    
-    let newEl = document.createElement("li")
-    
-    newEl.textContent = itemValue
-    
-    newEl.addEventListener("click", function() {
-        let exactLocationOfItemInDB = ref(database, `shoppingList/${itemID}`)
-        
-        remove(exactLocationOfItemInDB)
-    })
-    
-    shoppingListEl.append(newEl)
+// Delete Button
+function deleteTodoItem(index) {
+    todoItems.splice(index, 1);
+    localStorage.setItem("todoItems", JSON.stringify(todoItems));
+    renderTodos(todoItems);
 }
-
