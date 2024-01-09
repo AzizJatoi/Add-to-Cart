@@ -33,7 +33,8 @@ input {
 
 button {
     color: #FDFDFD;
-    background-color: #AC485A;
+    background-color: #4a7ba6;
+    background: #da969b;
     border: 0;
     padding: 15px;
     border-radius: 8px;
@@ -43,7 +44,9 @@ button {
 }
 
 button:hover {
-    background-color: #432000;
+    background-color: #eea990;
+    transition: all 0.1s ease-in;
+    color:#66545e;
     cursor: pointer;
 }
 
@@ -66,6 +69,7 @@ ul li {
 }
 
 ul li:hover {
-    background-color: #FFECC7;
+    background-color:  	#faebd7;
     cursor: pointer;
+    transition: all 0.1s ease-in;
 }
